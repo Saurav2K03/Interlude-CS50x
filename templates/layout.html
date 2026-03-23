@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <script src="https://kit.fontawesome.com/ff0f81b672.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link rel="icon" href="/static/favicon.ico">
+        <link rel="stylesheet" href="/static/styles.css">
+        <script src="/static/script.js" defer></script>
+
+        <title>Interlude: {% block title %}{% endblock %}</title>
+
+    </head>
+
+    <body>
+
+        <div>
+            <img class="bg-left" src="/static/images/cream.webp">
+            <img class="bg-right" src="/static/images/brown.webp">
+        </div>
+        
+        <nav>
+            {% if session["user_id"] %}
+                <div class="navbar small">
+                    <div class="navbar-items myRecords-section" onclick="myTracks()">My Records</div>
+                    <div class="navbar-items queue-section" onclick="displayQueue()">Queue</div>
+                    <div class="navbar-items"><a class="link" href="/logout">Logout</a></div>
+                </div>
+            {% else %}
+                <!-- <div class="navbar small">
+                    <div class="navbar-items"><a class="link" href="/guest">Guest</a></div>
+                    <div class="navbar-items"><a class="link" href="/login">Register | Login</a></div>
+                </div> -->
+            {% endif %}
+        </nav>
+
+        <div class="toast-box">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <header class="toast toast-{{ category }}">
+                            <div class="alert" role="alert" onclick="removeToast(this)">
+                                <div class="alert-message">
+                                    <p class="toast-category">{{ category|capitalize }}</p>
+                                    <p>{{ message }}</p>
+                                </div>
+                                <button type="button" class="toast-close" aria-label="Close">
+                                    <span aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
+                                </button>
+                            </div>
+                        </header>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <main>
+            {% block main %}{% endblock %}
+        </main>
+
+        <footer>
+
+        </footer>
+
+    </body>
+
+</html>

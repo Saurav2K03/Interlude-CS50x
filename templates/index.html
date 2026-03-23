@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+    <div class="index-page">
+    
+        <div class="home-left">
+            <div class="track-background">
+                    <div class="track-background-image"></div>
+            </div>
+            <div class="icon-bar">
+                <div class="player-icon glassy icon" title="Refresh" onclick="refreshPlayer(this)">
+                    <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <rect width="29" height="29" fill="url(#pattern0_103_17)"/>
+                        <defs>
+                            <pattern id="pattern0_103_17" patternContentUnits="objectBoundingBox" width="1" height="1">
+                                <use xlink:href="#image0_103_17" transform="scale(0.0111111)"/>
+                            </pattern>
+                            <image id="image0_103_17" width="90" height="90" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFXklEQVR4nO2dz29VRRTHP+l7CKSvlaUEf9Sg1rVaSRSjIfiLlcZUkyomUsEFJoCEuMQd1ZUU+QvYA4UYTdkYQyIxKEIXNDH4A2j9Aa0lXQhSO2bMaUJe3n137nszc2de55N8k+bm3ptzT+bNnDlzZgqJRCKRSCQSiUQikTCmAgwAw8AnwHHgAnAJmAVuiWbl2gW552N55gl5R6IB9wK7gZPADUC1qTngBLALWMcyZzWwFTgF/GvBuVlaAMaBt4BVLCNq0tKmHDo3S38CHwF308GsAPYBMyU4uF7ahr1iU0fxDDARgIPrNQlspgPQfeJhYDEAp2ZJ2zYKrCRS+oAzAThSGeo74CEiY7OlME15lg4LNxEJrwJ/B+A01aL0ZOgNAmeH45hYeZL+hu0EyuuROfmigbMHCQzdr90MwHnKUKclH6J/gf/kdCMvEAgPRzbwzUlEtIR29HzO/esJIE7+PgDnqQIaavAdG3JmrGfLjrMPB+A4VUBHmnzLhpyWrSc1pfBs4DM+VaefgN6cb9LdyO2M5/W3bsQzVeB8AM5ThtLOe8rw2/Y2ec+E70TUvgCcpwpof8FGNNnkXXvwmE++HoDzVIFQTjvPhPuBr3Ped1184JwPA3CeMpQOzR40/K5BWYc0ea/uXpwvP/0egAOVob40aM29Eo0Uee+062WxtwNwnioovSa5JuN7ngR+tBiPW+NUAI5TLWiiztlVGSBvt/lrcVYSUEbS6FeZLLwI9APdon65dgi4bPCecQnN+mSAtLG6vtaFo3d7dvAVYJthMUxFimeuGrTCOYs2vu/C0Sc9OvlYiyFUDzDm2U6rVC23BNVEnwJdbdiqnz3oydZZ2+VnAx5bSJcFe7s8tuzHsciwpz65ZtHmHk/VUO9YtPn/qs6oDBbe9WD3ASwy5iGEq2CfivxSohkQXadER3HHZ45tP2fT2J8dG/uSgQ13SbH5tPS9I3Itjy0eFhSs4Tot+oiBDSMNntPX8uh3bPs1LHLLsbE1AxumGzz3m8FzNce26zKLjnL0VIPn9JQbgzRoNI4Otes40GldRyiD4Yi07I4dDF2Hd4eIt/bEanh33LGxlx1NWKoeJixHY5uCD2Of92KbgvtIKl2VRJAtejNCwqBzNL7SpGMW06QnPNn8GBapeEz8H7SQ+B+NNfGPxxaipGX3tNhd+FxyszoQLrHLooFzslDa7J4pySdXDKOLHZ765Du104Wj18kSe7vGnZYl/xVSApB3/xVJdb4MPCrT9Zr8vUXiZNchXCPpmpB7cMR4m4btryvRWiPnbagI9QUO2dqiUb/IfvBG6L748wAcF1RJ2GpJTRYx6IhBpX3VoM8OSVM+zv4wLUK/Ib8AE+4rUDIbgj7AA92SGmxmyJkCW8a6gK8CcJ6pvBWi5+3zuFigwh4ZIFVE0mGuN7Qjf7BQET+Qs3M1NHnfLIREEYtNQrm8rb29kjRXkUh/69OURLOcwrxsksyi6HaGsqWLL0tjpWzfzTJuJsPZQwE4roi+NVw2c8r6nMzefF030ucxE2hDfxXY2eWc53JOnVmQbXOVyEI5XWbxPIExaLDHZTIA55lKN47XCJTtkZ1Co5o4Wadog+aVyA+vuinHFkXBpsgGPHXHwKfHm6h4APgmAOcpQ50N4UifduLs0cAPUFmUyUjpcbINNgZ6kMr5MqfVLhNRewxSrD50TbJwRbKM0dEtH5m3ndiF/pCDuvNWfDqKVcCbsoRlY3U9SwuykDq03I6eb8Ra2cB+zNKS1qy8a6fLkoDYqUg92zYpNj8qNciXJBu49O9BZuTaOblnRAoO9bPp34MkEolEIpFIJBKJBIb8B3tkcQDXSCP6AAAAAElFTkSuQmCC"/>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="icon-api glassy icon {% if not api_access %}dimmed{% endif %}" title="{% if api_access %}Spotify Connected{% else %}Spotify Not Connected{% endif %}">
+                    <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <rect width="29" height="29" fill="url(#pattern0_149_2)"/>
+                        <defs>
+                            <pattern id="pattern0_149_2" patternContentUnits="objectBoundingBox" width="1" height="1">
+                                <use xlink:href="#image0_149_2" transform="scale(0.0111111)"/>
+                            </pattern>
+                            <image id="image0_149_2" width="90" height="90" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAACXBIWXMAAAsTAAALEwEAmpwYAAAGQ0lEQVR4nO2de4hWRRjGf37amkWmWRppV4ogLM0N07TsskFZUJiaBHkrK1MrFIogKgg2DaKLlV2ICiLosmpWYv+EpllZKfaHJaVpsVm53soyLzkx8AjLspdzmTlnzrfngQd3P/Y7M/Occ955533fGaFEiRIlSpQoUaJEiRIlSkRGV2AIMBWYBywCvgU2ATuB/eJOfbZefzNX37kQqERvrnPhZGAmsFgCmpTcKfFnAP3o5KgBJgAfAYcciNsWDwIfAuPVZqdBd+AO4GeP4rbF34AHgGOocts7A/g9B4FbE3x6NdryIcAXAQjckmuBYVQBuslz+C8AUduinR/q1ddCYgCwKgAhTUR+CZxBwTACaApAPBOT24tkSq4H/g5ANJOQtu+jCRy3yG81BecB+fhB4roqEdk0Ezu4J/tiYG8A4hjH/EfzTRA4taATn4nIP4D+eYvcrWAunEnIz4Gj8hR6XgAimIxoFzW54CLPUTcTGO3qdmjWIle0kjKdjF8pOJYZZgQwaJMT78xK5KOBXwMYsMmJ24AeWQh9bwCDNTnTvtFeYVNBv6ScUDYDHwPzgdnAROBaYDBwFtAH6N3sqemi33srIngBcJWW+/amPwssBTZqNZeF0Ft9p8VujtGZwxr8G8DdQK3SWD5Ro3amAQuUIT/sSexxPgeyNGInPgHOIQycCNwEPJ/ybWzJD3yWBEQJGu0AehImuiguY2tAfkoptNWir49OzozYgYUUAxXgauBt4N+EYtsEr3Msitj46xQPfbXE3h1T6AbXHekao4LIZpaT+OanAcMVAx4nr8LWf9ym3y3rgPNVfeSjVOB44CFgX8Sx7nDdj9qYd3pMO0/OaOBB4DVgtfJ0SW3kD5qgnwZuBwY5ymaPimFObK2fM0yNKYJ9Ip7RcvUx2e2tKSefOMH6lcCjwMgU4c35Edub7FLoIodD9wBvAjfIREXFmIjXf9yl0IsDEMw44G7509bOd4Q5eXhZ6z0L0ASsAd4H3gFe0tL6Sf38ij5fDmwAdjloc4Xcu9ZgiyC/j3iddS6FTuvcG9EmCr4BXtQyuTbF4uYE2eBpsqfrEiYiPpNZORJntt7Pshjft7EbZ0iTfP1TXsHoDFaMxylAZc3Dlpj93CXR4sZGrNfkDPsTirxREbe8YF2vp5TJNp5o3cDchZ5EGKgBxspvD1ropKbjCsLDSG3ncCX09hAmw/sjXLuPVnS2pGwKMEvbHx7Rv5b3NEsQDNJEmBaXy9NJK/TmENw767de0+w65wG3Ak9oZm9M+SRZj+EFmahzE4ZNZ6dMDqzLI3LXXvCl0eHr2hZtYP9luWtxsjmvpGjTaQRvbgYiGce0N/c5mZqOUBdKBdOUAIQzCXlYEb5L2xnffSmuP8n1ripTBWwAzmwxtl4pc4k2e+8MFUdbh00z2tKA7zT4efIsxqoe2S7Nz1b5wRHaAV2mhMAcxUBWJoh77FMI4EaFf6PGNFpjk48ExMKUr+964FXFqAc7LIO1Ax0I3KWb9leGb8h7BFZvN4Xs0F1xlbeUBPAptL25ztEv4R6VPfJX80BPmaQfPYh8wFe5ATolIEn0rhIjJnG6bPQIuV112vs3MMXAKjrdYINDoZfgEeMTdmpWK8vuUSoVW6Ag/LaIK7T9EqxBGesrgWMj9r+r+uJiy7SduL2hJsXxD6vlz27zFEFbphtnb2JHeDhle1uy2NMyy4NQxiHtE/8ucEk7Yxiesg17Q72jh6en0njgKoVFXcY2GmNm01NhegAimhhcqGxLL4Vf01zL5igzQyXQg06MZ67J49Sa2k62/e2Q6/KvOKgPQACTEW1pW26wBYWfBiCC8czlWe8vbA0DUlSEmgLQnmp2CoFgaMZRM5PhaTTW5w4KdSnqP0yAPNAisRwUJmS41894Ftlu9QsadYrYmYJyr+pHCoFhnuvdjMeJL/OjItKif8FcvxUheRdJ/Oz6wFeQh7QYyd1PdoHBnio50/LrIpqKjlBRBjyEsz4aFYWrumONW2ZpJnpKmHbErTp6IpODTUISfJxOCTjo2SdeohxfrkeqhYC+SiY0ODqssEnFLbbu4qS8BxcqKpo8J2uzZIP2l29SheiR/x5khz5bq7+p13cGVbvtLVGiRIkSJUqUKFGiRAlc4n9iAdwrY3yGbQAAAABJRU5ErkJggg=="/>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="apparatus">
+                <div class="vinyl-base glassy">
+                    <div class="vinyl-wrapper">
+                        <img class="vinyl" src="/static/images/vinyl_1.webp" />
+                        <div class="vinyl-sticker">
+                            <img src="/static/images/ndl.webp">
+                        </div>
+                        <div class="vinyl-sticker-overlay">
+                        </div>
+                        <svg class="vinyl-sticker-copyright" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                id="circlePath" fill="none" stroke-width="2" stroke="hsl(0 0 0 / 0)"
+                                d="
+                                M 3, 50
+                                a 47,47 0 0,0 94,0
+                                47,47 0 1,1 -94,0
+                                "
+                            />
+                            <text dominant-baseline="middle" fill="white" font-size="2">
+                                <textPath href="#circlePath">
+                                © 2026 INTERLUDE • ALL RIGHTS RESERVED
+                                </textPath>
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+                <div class="arm">
+                    <div class="arm-base glassy"></div>
+                    <img src="/static/images/tone_arm2.webp">
+                </div>
+            </div>
+            <div class="mixer">
+
+            </div>
+            <div class="song">
+                <div class="record-name large">
+                    Miles Away - NDL Overture
+                </div>
+                <div class="record-artist small">
+                    Devin Belanger
+                </div>
+            </div>
+        </div>
+
+
+        <div class="home-right">
+            <div class="search">
+                <div class="section-title medium">
+                    My Records
+                </div>
+                <div class="search-bar">
+                    <input class="search-input" spellcheck="false" autocomplete="on" placeholder="search records..." type="text" track-search>
+                    <div class="search-button">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="home-content">
+                <div class="search-content card-layout"></div>
+                <div class="myRecords-content card-layout"></div>
+                <ol class="queue-content list-layout"></ol>
+            </div>
+            <div class="hello small">
+                Hello, {{ user[0]['username'] }}
+                {% if api_access %}
+                    <div class="active-device small">
+                        Playing on: No active device
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
