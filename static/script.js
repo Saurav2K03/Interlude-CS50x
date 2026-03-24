@@ -34,6 +34,30 @@ function refreshPlayer(icon) {
   checkCurrentlyPlaying()
 }
 
+function showToast(message, category = "info") {
+  const box = document.querySelector(".toast-box")
+  if (!box) return
+
+  const toast = document.createElement("header")
+  toast.className = "toast toast-" + category
+  
+  if (category === "warning") {
+    category = "issue"
+  }
+
+  toast.innerHTML = `
+  <div class="alert" role="alert" onclick="removeToast(this)">
+      <div class="alert-message">
+          <p class="toast-category">${category.charAt(0).toUpperCase() + category.slice(1)}</p>
+          <p>${message}</p>
+      </div>
+      <button type="button" class="toast-close" aria-label="Close">
+          <span aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
+      </button>
+  </div>`
+  box.appendChild(toast)
+}
+
 function removeToast(closeBtn) {
   const toast = closeBtn.closest(".toast")
   if (!toast) return
@@ -462,6 +486,10 @@ async function play(data, position_ms) {
     })
 
     if (!response.ok) {
+      if (response.status == 403) {
+        showToast("This feature requires Spotify Premium.", "warning")
+        return
+      }
       const payload = await response.json()
       showToast(payload.message, payload.category)
       return
@@ -479,25 +507,6 @@ async function play(data, position_ms) {
   } catch(error) {
     console.error("Error during play(): ", error)
   }
-}
-
-function showToast(message, category = "info") {
-  const box = document.querySelector(".toast-box")
-  if (!box) return
-
-  const toast = document.createElement("header")
-  toast.className = "toast toast-" + category
-  toast.innerHTML = `
-  <div class="alert" role="alert" onclick="removeToast(this)">
-      <div class="alert-message">
-          <p class="toast-category">${category.charAt(0).toUpperCase() + string.slice(1)}</p>
-          <p>${message}</p>
-      </div>
-      <button type="button" class="toast-close" aria-label="Close">
-          <span aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
-      </button>
-  </div>`
-  box.appendChild(toast)
 }
 
 // Pause the track
@@ -729,9 +738,29 @@ async function availableDevices() {
   activeDevice.textContent = `Playing on: ${device}`
 }
 
+// Check for premium account
+async function accountTier() {
+  const response = await apiFetch("/api/account-tier")
+
+  if (!response.ok) {
+    if (response.status == 403) {
+      showToast("Please contact admin to grant you access.", "warning")
+      return
+    }
+    return
+  }
+  const product = await response.json()
+  const premium = product.is_premium
+  
+  if (premium) return true
+
+  showToast("You can 'Search' but not 'Play' songs without Spotify Premium.", "warning")
+  return false
+}
+
 // If API is connected, then only myTracks() and checkCurrentlyPlaying()
 async function main() {
-  if (await checkApiStatus()) {
+  if (await checkApiStatus() && await accountTier()) {
     await myTracks()
     await checkCurrentlyPlaying()
     await getQueue()

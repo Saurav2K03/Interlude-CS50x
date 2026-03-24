@@ -41,6 +41,7 @@ p {
     right: 0;
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 20px;
     z-index: 50;
 }

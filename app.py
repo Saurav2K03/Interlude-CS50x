@@ -17,20 +17,27 @@ load_dotenv(override=True)
 # Configure application
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
-redirect_uri = "http://127.0.0.1:5000/callback"
+if (os.environ.get("FLASK_ENV") == "development"):
+    redirect_uri = "http://127.0.0.1:5000/callback"
+if (os.environ.get("FLASK_ENV") == "production"):
+    redirect_uri = "https://interlude.pythonanywhere.com/callback"
 
 # For Spotify API
 client_id_spotify = os.environ.get("CLIENT_ID_SPOTIFY")
 client_secret_spotify = os.environ.get("CLIENT_SECRET_SPOTIFY")
 
 # Configure session to use filesystem (instead of signed cookies)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_FILE_DIR"] = os.path.join(BASE_DIR, "flask_session")
+os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///interlude.db")
+db = SQL("sqlite:///" + os.path.join(BASE_DIR, "interlude.db"))
 
 @app.after_request
 def after_request(response):
@@ -230,6 +237,28 @@ def callback():
     return redirect("/")
 
 
+@app.route("/api/account-tier")
+@login_required
+@auth_required
+def account_tier():
+    access_token = session.get("access_token")
+    response = requests.get(
+        "https://api.spotify.com/v1/me",
+        headers={"Authorization": f"Bearer {access_token}"},
+        timeout=15
+    )
+
+    if response.status_code != 200:
+        return jsonify({"error": "Profile fetch failed", "message": response.text}), response.status_code
+    
+    profile = response.json()
+    product = profile.get("product", "unknown")
+    return jsonify({
+        "product": product,
+        "is_premium": product == "premium"
+    }), 200
+
+
 @app.route("/api/refresh", methods=["POST"])
 @login_required
 @auth_required
@@ -261,7 +290,12 @@ def top_tracks():
         timeout=15
     )
 
-    return jsonify(response.json()), response.status_code
+    try:
+        payload = response.json()
+    except ValueError:
+        payload = {"error": "Not a JSON response", "message": response.text}
+
+    return jsonify(payload), response.status_code
 
 
 @app.route("/api/search", methods=["POST"])

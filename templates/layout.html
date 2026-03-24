@@ -46,7 +46,11 @@
                         <header class="toast toast-{{ category }}">
                             <div class="alert" role="alert" onclick="removeToast(this)">
                                 <div class="alert-message">
-                                    <p class="toast-category">{{ category|capitalize }}</p>
+                                    {% if category == "warning" %}
+                                        <p class="toast-category">Issue</p>
+                                    {% else %}
+                                        <p class="toast-category">{{ category|capitalize }}</p>
+                                    {% endif %}
                                     <p>{{ message }}</p>
                                 </div>
                                 <button type="button" class="toast-close" aria-label="Close">
