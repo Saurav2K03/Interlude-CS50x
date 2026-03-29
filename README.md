@@ -1,6 +1,5 @@
 # INTERLUDE.
 #### Video Demo:  <URL HERE>
-#### Description:
 
 ## Introduction
 Interlude is a web application for playing music with a unique & sweet twist in UI. It is a modern and digital reincarnation of the a classic vinyl record player (or a turntable). While popular music applications like Spotify, Apple Music, YT Music, etc. are great themselves, but I felt that in the pursuit of catering to masses and maximizing profits, the room for creativity has diminished. So, I took it upon myself to create a personal music app that stands out from the crowd and is not meant for mass use, rather for people who want to keep their creative flame alive. It has a clean, minimal, and modern aesthetics. This app extracts away the complexity of popular music apps, with a simple structure. The user logs in, connects their Spotify account to the app, searches for tracks, plays a track, and controls playback while managing a custom queue.
