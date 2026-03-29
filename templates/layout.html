@@ -11,31 +11,70 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <link rel="icon" href="/static/favicon.ico">
         <link rel="stylesheet" href="/static/styles.css">
+        <link rel="stylesheet" href="/static/responsive.css">
         <script src="/static/script.js" defer></script>
 
         <title>Interlude: {% block title %}{% endblock %}</title>
 
     </head>
 
-    <body>
-
-        <div>
+    <body class="bg-right-active">
+        <div class="page-bg" aria-hidden="true">
             <img class="bg-left" src="/static/images/cream.webp">
             <img class="bg-right" src="/static/images/brown.webp">
         </div>
-        
         <nav>
             {% if session["user_id"] %}
                 <div class="navbar small">
-                    <div class="navbar-items myRecords-section" onclick="myTracks()">My Records</div>
-                    <div class="navbar-items queue-section" onclick="displayQueue()">Queue</div>
-                    <div class="navbar-items"><a class="link" href="/logout">Logout</a></div>
+                    <div class="navbar-items turntable">
+                        <div class="nav-icon">
+                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                <rect width="23" height="23" fill="url(#pattern0_440_5)"/>
+                                <defs>
+                                    <pattern id="pattern0_440_5" patternContentUnits="objectBoundingBox" width="1" height="1">
+                                        <use xlink:href="#image0_440_5" transform="scale(0.01)"/>
+                                    </pattern>
+                                    <image id="image0_440_5" width="100" height="100" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAJjklEQVR4nO1da6wkRRXuuCD4iFHxjc9dFPijRv1hEIP4TDRRNGjwERfjAxZEXR+/jAk/2Aj6UxMTEzXxsbLghoCJmkDCD6OweBdhvTvn9PC4u5usuHDpc6pm7rLuIm1O99y73TU9PdXV3dMz3PqSSm5m+lZXna/rnFPnnOoJAg8PDw8PDw8PDw8PDw8PDw8PDw8PDw8Pj02IOF5+7oDxM5pwtyZEzTjUjLFvWKcNE1kS7hbZioytyNDU+5RmeGQOJhA/qxvBw5rCT5asivg5mvFHnQ+UN1dTDDeJ7MdXBuOPux6c3qRNMdxYoKa6H5jezI3wsg0Dnuizrge06Rs8khj6xJvqfDC+aWkElweJa9v1QBa4KcL/KMJvK4LvyN/1CMHfCiFh15Na6BaF792wxVHvkpqEoHhXuvNJLXCL43hLZuuwpWZ/OuhyMooAFOHPNMPVA8L3M4dbmQ+8JI6XzpTJyd/ymXwn12jGX87bii7YPtTrb+YkMPxTEe5cWw3PDRzBvHyeYlzumoyFJUQRPKMZ71Cq9+6gAaythucqwpNdkaAI/5vGpMIrzLHJZ4rg967ja58Qgn3M8K6gQSjCG4z77B8QXDoLdaYYb42ig2+YNkYieKNi3Ds3hCiG48y9rxfGaWogjlfOVgSP559YuDL9rn+WIrheEZxoflXAM8xwXdXxKsJvjTREh4QQ4iDCtzZJxDpE+IagHheSNi4IgmAYhW/TDI82SoiCbwSOEFI6I0Qx/JVo5cVBS9CM+/OE4K5CIajeOZrwb83MCfea/cvKV1Fv+9h9o972Iq2gGG6bPSEEf4qPHHle0BJ0hBcbZJxaW+2/dtL1R48uPV8x3FmLDMKTx5986HXZfpmXXyq2MRGgOcZUDvvkmuznYndsDH3Q5MpokwyBItiTFxbsCaZgdbX/IsXwoPtDhruz/cXx3Wdogvs2BGgg83Duy24aR+O/eTaEEGKbakogK2HsCYvw4sAC8oQrwn+7zI2599lsX4rgSzkBGihyNtbBDJ9vnRDxptoy4GWurmK4P6gAZninIniqOiHh1mw/mvAftoTIKsmPYfm81gkZMF4btIy4xNWtAkXwvarze+yxB16Q64PhuDUhjGvZ76SvdglJ9WSj+wxXV9cGo+Df0gwJGWa/O3Zs+YWtETLaKDW6A6/r6tpA7E6Vjdq4yjpt0KcSQnDvLFXWHUFDGA57r9YMVyXxLoKDmjHSjAPNuKIY7qri6k5Re1ea5E4nBD5XtlrN++TGauxTlMIvtLdCGggUDofLr5LwuwjZ+r6MtzoEIneZNqim27tvKiEE9xa4vXtaIURC6DV4SAenwo9qBuUgoNUB4QcsVdOeulFh+X8zmCh5GhH4REII75Frsp8T4ZtsHjw3Qgh31iFDM+5QBE/XENIpTfgVV7UkQlaM/6rwAN5mHzoJv1jk6GjG223u5URIneSSUuHHishQDA9IdFgpOF92/NK0xgskwqoYDxSRIpnEjFq6YZpaUgTH5Dq53sbA5v43gm86z5lwp+19AqdEfD3jnVNTaagcripzn+O0zHWHGVZXBE9YqqWlNOjXPyvbb5X8iXhmLqSMKlLaC7+LEXYlJM2fG2REvUts/39A8D7bXEeiliR2pPE9k/pLcvRV58+4V5JP08aa2AzLCG+9FcJwdeCAtSfgNeNGDb5WtR+dFjtYqaXpfeGO6vM/TXZJCvfmmaVwJVVaVYhFghRPzVRTxyUIyPiHUWmSlidMbMqYMS2O3haqpTIMOPygi9ByAhybZ83+qv6DzXItJITwj2UxMCFDEz5ZcM9oPB8B1xnk3ukypqqGfS4JkUycy+QVQc/o5y2579OVERfek/GW3KQ1XpC/Bh51GVOyn1h0QqyPYo0NFCjXj5HMKq+gBGVmAo1rBi5jSir/F5+QpTNdJm+eU6xICJcTAuQyJrE3C0+Ia2ZQAoXlKmuyi2imak2VJQFJpzFpfNnCE2KGo21hFhvIrjz3vYLzR1He/D0JV83orpTkGNfd7jImmcvCE7IerrBBUrgW9bYXJYXEdZ3g9t6S7uZBycowyZAI6ngopfp+5lnj9tpsDDOxpWN1+zIh7nKOWMKTEsYPHGD2taCE4C8mTVDCFFV2qRIGkXCItQAJLk0KnfN9/DRwhGL4+eITYgQXy9SS+SQnCRrCVZMUCWFMCS5ukafZJENszmDw8CtcCdGEDy0+IYlB7m+zVUsSEs/GlsQGFSVqxKaw7MB1eKG4tYlrq8MLxYAXh9/haWb4iCsZknSqK7y5IUSSOxZqab8ki4qqQzThl6ukbXUBGa6G3KUkSDEcSU5xJW4yfD8TTj88F4RMVUsWFYXJBA31pe1axNz7cB0yEkIKVt2Ednis8iQtyFiREHvVuquZEDJSS7uqZhKlYKEK2ZrwJ1r3X9500XYVMrLCNz+TvVXXhExUS5a1ujm1pZKSn+Rch5QARXKOMNnBU/jVweDAK4OGoAn+XIeMIgwYP11HDdcmRPRolU2iCVlRJrnBDKAUXGRDhqmOyiBvw2iCjPorhLDvVtKZHD3LeWdFFRxNI93lw/3TV0Z/W5V+UycF/tc9IelKub6rWt0Wqj8OVVkZWWjGH8wLISeIeu+oJBjjKZV9StAyOD2OcKINMgRi4+aCkESgjEfNNGuFY2knXWp1qyA9b1j6CqpDrqnpdTD3PjQ3hKSkwINyfKyNY2l1kOz4Ce8pGftKfTLCrbJ5nCtCRqTcVeSfl7m6tsfSapDxl3ZXRpJTOdyUDJs/p07490mFELN0dVV6LLpsZcRlRXRdkNEOIWlbGVL49jaOpdkacJvXFpat5mkQB6BpMtokRIT9lATw1s9IzMLVjWWfQbizwqs1rpknMlolJNOWRp7V/jZdXaXgIotNn/HQ4CkJeTiQcagteXXyArPU1XU/0pBFQrZdbKo2KW2T0R0hEjRUB98cOCJKXlMB360QQq9NinhjbZPRGSEbjbCvGX8lKVypAGHub0tf8Xf3GVJVKO8LEeJG1SHXJDnwBtKuVUmZFRnrhAw6JWWOmkrTwrlTt1G0/PqmX/U0uYHyr4nlwpVyrUQdRq99ncnKOP2aWMLfdS0E33BECPzav2qc5+xV41LN3pah9A2rv4xfIL/00v2ANm8bnfD9eM6187+ug10S8sMxX3t0mPKmrgenN9vKYLix9BVX8ksv3qbgbDbFEX5iWlRitFrE0MPl8nsW8sJ8v3nEJtogOfhK8BuRrevRQA8PDw8PDw8PDw8PDw8PDw8Pj2BO8H+LGvmAXOkAQAAAAABJRU5ErkJggg=="/>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div>Turntable</div>
+                    </div>
+                    <div class="navbar-items records">
+                        <div class="nav-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                <rect width="20" height="20" fill="url(#pattern0_440_6)"/>
+                                <defs>
+                                    <pattern id="pattern0_440_6" patternContentUnits="objectBoundingBox" width="1" height="1">
+                                        <use xlink:href="#image0_440_6" transform="scale(0.01)"/>
+                                    </pattern>
+                                    <image id="image0_440_6" width="100" height="100" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAB60lEQVR4nO2dS07DMAAFvYI7wA35HZPPAsoCYcMVQMqL066NApVQF0hVG5LnZEaaA9ijttJbuCEAAAAAAADMhFLeT9s23uQm3meldVYqlbvuzyK9XpXychJqYvP5dt4qPhtcYvkPW8VVf8ZQzSdjxjHyb5SnKj4p319TBheWR7BTugzu5CY+TH1ReSybdBfcyUrd5Bel0eyCOwaXVMY0uDP1BWWC7DL1BWWC7DL1BWWCAAAAHMYMV91S7Qo891U317QCL2XVzbWswEtadXMNK/CiVl1VsAIvbNUt9iuwwaGLswSRlwSRlwTRwoMAAADsC6tu8lmBWXWTzwrMqpu8VmBW3eS1ArPqJq8VmFU3ea3ABococ5Ig8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIg8pIgml8QHp/RUMb2+CA/T/oZHCbVb5Nujw4ixevJD6LZeDHUE38rg8OUyn0c7DHM7SOYRNHhMTYf8SwMSV+3f/K0/x7khz7tY7e9q4vJ/ywMAAAAAAAg/M0XFIQfXa8IVmAAAAAASUVORK5CYII="/>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div>Records</div>
+                    </div>
+                    <div class="navbar-items queue">
+                        <div class="nav-icon">
+                            <i class="fa-solid fa-list-ul"></i>
+                        </div>
+                        <div>Queue</div>
+                    </div>
+                    <a class="link navbar-items" href="/logout">
+                        <div class="nav-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                <rect width="20" height="20" fill="url(#pattern0_443_8)"/>
+                                <defs>
+                                    <pattern id="pattern0_443_8" patternContentUnits="objectBoundingBox" width="1" height="1">
+                                        <use xlink:href="#image0_443_8" transform="scale(0.0111111)"/>
+                                    </pattern>
+                                    <image id="image0_443_8" width="90" height="90" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAACXBIWXMAAAsTAAALEwEAmpwYAAACIUlEQVR4nO3dP24TQRTHcUtALkTDAbgPJZR0mD8J9+AAUFBwAcqIN+lJkBDJvHlOP8ggihg7xnj9m9nN9yttu3r70Xq2Wc/OZkRERER3tlo/3S/ly6Pw9DSyvQ83L57OS7YXtZ4etZ5vQrBpEZ7qumOJ3Xre0VRrveduD8uVPSme3oVb3gT7N3T61nr+Sdyx0dnxa8lym3e5ZI0ZNjaC23zUS0GM5Gi6ZNX6+UF4eh1u5QAXt2iNu3o0gw6340Fhs30IT8+Wy85y+WkN2w10yfZ9j8Gvi9vHku35ws8er3vYtIbtBnpo2NVaw44FemfY1VrDdg/9Z4091PkD6GEHig5wgXaggR46oEUBLQpoUUCLAloU0KKAFgW0KKBFAS0KaFFAiwJaFNCigBYFtCigRQEtCmhRQIsCWtQ+A9V6elTcXpacLja97N0adhLQxW2+7WXv1rDTgM7pYtvL3q1hpwHt6XzNHf31X84P9L5LR77517bWsFN6GM5/Pwh5GN7aoQeKDnCBdqCBHjqgRQEtCmhRQIsCWhTQooAWBbQooEUBLQpoUUCLAloU0KKAFgW0KKBFAS0KaFFAiwJa1KaB2I5t4LYMxgaDQ7XjoNdsmfmfsQmsqPD0ZsALWbCt8e0bdb9io25Rd2Lreb/5knwXTfJjCnkE33+pI4bv+vMgB4XP6bL1/KOt7gRvJ63nnfJHyXLk9CPc3o7yJ0xEREQ0U/UTGmpJxKTBOiAAAAAASUVORK5CYII="/>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div>Logout</div>
+                    </a>
                 </div>
-            {% else %}
-                <!-- <div class="navbar small">
-                    <div class="navbar-items"><a class="link" href="/guest">Guest</a></div>
-                    <div class="navbar-items"><a class="link" href="/login">Register | Login</a></div>
-                </div> -->
             {% endif %}
         </nav>
 

@@ -12,7 +12,7 @@
                     <div class="track-background-image"></div>
             </div>
             <div class="icon-bar">
-                <div class="player-icon glassy icon" title="Refresh" onclick="refreshPlayer(this)">
+                <div class="player-icon glassy icon" title="Refresh Player" onclick="refreshPlayer(this)">
                     <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <rect width="29" height="29" fill="url(#pattern0_103_17)"/>
                         <defs>
@@ -84,7 +84,7 @@
         <div class="home-right">
             <div class="search">
                 <div class="section-title medium">
-                    My Records
+                    Records
                 </div>
                 <div class="search-bar">
                     <input class="search-input" spellcheck="false" autocomplete="on" placeholder="search records..." type="text" track-search>
@@ -95,7 +95,7 @@
             </div>
             <div class="home-content">
                 <div class="search-content card-layout"></div>
-                <div class="myRecords-content card-layout"></div>
+                <div class="records-content card-layout"></div>
                 <ol class="queue-content list-layout"></ol>
             </div>
             <div class="hello small">
@@ -103,6 +103,23 @@
                 {% if api_access %}
                     <div class="active-device small">
                         Playing on: No active device
+                    </div>
+                {% else %}
+                    <div class="active-device small">
+                        <a class="link api-right" href="/api/auth">
+                            <div>Connect to Spotify</div>
+                            <div class="player-icon icon">
+                                <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <rect width="23" height="23" fill="url(#pattern0_437_3)"/>
+                                    <defs>
+                                        <pattern id="pattern0_437_3" patternContentUnits="objectBoundingBox" width="1" height="1">
+                                            <use xlink:href="#image0_437_3" transform="scale(0.0111111)"/>
+                                        </pattern>
+                                        <image id="image0_437_3" width="90" height="90" preserveAspectRatio="none" xlink:href="data:image/png;base64,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"/>
+                                    </defs>
+                                </svg>
+                            </div>
+                        </a>
                     </div>
                 {% endif %}
             </div>

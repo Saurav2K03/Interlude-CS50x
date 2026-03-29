@@ -34,6 +34,10 @@ p {
     margin: 0;
 }
 
+svg {
+    display: block;
+}
+
 .toast-box {
     position: fixed;
     color: whitesmoke;
@@ -136,12 +140,20 @@ p {
     align-items: center;
 }
 
+.page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .bg-left,
 .bg-right {
-    position: fixed;
+    position: absolute;
+    top: 0;
     width: 50%;
-    height: 100vh;
-    z-index: 0;
+    height: 100dvh;
+    object-fit: cover;
 }
 
 .bg-left {
@@ -152,27 +164,68 @@ p {
     right: 0;
 }
 
+main,
+.login-page,
+.index-page,
+.home-left,
+.home-right {
+    position: relative;
+    z-index: 1;
+}
+
 .navbar {
     list-style-type: none;
-    padding: 10px;
-    margin: 10px;
-    position: absolute;
+    background: rgba(0, 0, 0, 0.3);
+    position: fixed;
     bottom: 0;
     right: 0;
+    width: fit-content;
     display: flex;
-    flex-direction: column;
-    align-items: end;
-    gap: 10px;
-    z-index: 10;
+    align-items: center;
+    gap: 15px;
+    margin: 20px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    backdrop-filter: blur(10px);
+    z-index: 100;
 }
 
 .navbar-items {
+    position: relative;
     color: #f2f0d8;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.1));
+}
+
+.navbar-items.turntable {
+    display: none;
+}
+
+.navbar-items:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: rgba(242, 240, 216, 0.5);;
 }
 
 .navbar-items:hover {
     text-decoration: underline;
+}
+
+.navbar-icon {
+    width: 23px;
+    height: 23px;
+}
+
+.navbar-items i {
+    font-size: 20px;
 }
 
 .link {
@@ -213,76 +266,78 @@ p {
 /* CSS for login.html */
 
 .login-page {
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    padding: 20px;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .app-name {
-    position: absolute;
-    font-size: 110px;
-    line-height: 110px;
-    top: 18%;
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-left: 50px;
-    padding-right: 50px;
+    position: relative;
+    font-size: clamp(56px, 8vw, 110px);
+    line-height: 1.05;
+    padding: 0 clamp(10px, 3rem, 40px);
+    margin: 10dvh auto;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+#inter {
+    color: #493920;
+}
+
+#lude {
+    color: #f2f0d8;
 }
 
 .login-main {
     position: relative;
     display: flex;
-    justify-content:space-around;
-    width: 100%;
-    margin-top: 5%;
+    justify-content: flex-start;
 }
 
-.greeting {
+/* .greeting {
     padding: 10px;
     margin: 10px;
     position: absolute;
     bottom: 0;
     left: 0;
-}
-
-.register {
-    color: black
-}
-
-.login {
-    color: white;
-}
+} */
 
 .register, 
 .login{
-    position:relative;
-    display: flex;
     align-items: center;
-    flex-direction: column;
-    width: 50vw;
+    margin: 0;
+    width: 50%;
+    font-size: 38px;
+}
+
+.register {
+    color: black;
+    left: 0;
+}
+
+.login {
+    color: whitesmoke;
+    right: 0;
 }
 
 .register form, 
 .login form {
+    font-size: 18px;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    margin-top: 40px;
-    width: 60%;
+    margin: 2rem 0 0 0;
+    width: clamp(200px, 90%, 420px);
 }
 
 .register form button,
 .login form button {
     font-family: "Futura Cyrillic Book";
     font-size: 18px;
-    margin: auto;
-    margin-top: 40px;
+    margin: 5vh auto;
     padding: 5px 20px;
     border-radius: 20px;
     cursor: pointer;
@@ -290,7 +345,19 @@ p {
 }
 
 .login form button {
-    color: white;
+    color: whitesmoke;
+}
+
+.register-show,
+.login-show {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.register-show-btn,
+.login-show-btn {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .field {
@@ -335,23 +402,6 @@ p {
 }
 
 /* CSS for index.html */
-.player-icon {
-    transform-origin: center center;
-}
-
-.player-icon.spin-once {
-    animation: spin-icon 500ms ease-out 1;
-}
-
-@keyframes spin-icon {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 .index-page {
     position: relative;
     min-height: 100vh;
@@ -362,27 +412,35 @@ p {
 }
 
 .home-left,
-.home-right {
-    position: fixed;
+.home-right,
+.register,
+.login {
     width: 50%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
     box-sizing: border-box;
     z-index: 1;
 }
 
+.home-left,
+.home-right {
+    position: fixed;
+}
+
 .home-left {
     left: 0;
-    display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     color: #050505;
     padding: 20px;
 }
 
 .home-right {
     right: 0;
+    justify-content: flex-start;
     color: whitesmoke;
-    background-image: none;
     padding: 20px 0px;
+    gap: 5px;
 }
 
 .icon-bar {
@@ -406,12 +464,21 @@ p {
     background: rgba(0, 0, 0, 0.3);
 }
 
-.apparatus {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    margin: auto;
-    width: clamp(260px, 40vw, 1600px);
-    z-index: 2;
+.player-icon {
+    transform-origin: center center;
+}
+
+.player-icon.spin-once {
+    animation: spin-icon 500ms ease-out 1;
+}
+
+@keyframes spin-icon {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .track-background {
@@ -443,6 +510,14 @@ p {
         rgba(0,0,0,0) 100%
     );
     transition: 1s ease-in-out;
+}
+
+.apparatus {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    margin: auto;
+    width: clamp(260px, 40vw, 3840px);
+    z-index: 2;
 }
 
 .vinyl-base {
@@ -610,6 +685,7 @@ p {
 .section-title {
     color: #f2f0d8;
     margin-left: 20px;
+    z-index: 1;
 }
 
 .search-bar {
@@ -622,10 +698,11 @@ p {
     justify-content: end;
     box-sizing: border-box;
     margin: 0 20px;
+    backdrop-filter: blur(10px);
 }
 
 .search-input {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
     color: whitesmoke;
     outline: rgba(242, 240, 216, 0);
     border: none;
@@ -676,12 +753,13 @@ p {
 
 .home-content {
     position: relative;
-    height: 82%;
     overflow-y: scroll;
     box-sizing: border-box;
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 50px, black calc(100% - 50px), transparent 100%);
     mask-image: linear-gradient(to bottom, transparent 0%, black 50px, black calc(100% - 50px), transparent 100%);
     padding: 20px 20px 20px 28px;
+    flex: 1;
+    min-height: 0;
 }
 
 ::-webkit-scrollbar {
@@ -698,16 +776,15 @@ p {
 }
 
 .hello {
-    position: fixed;
     bottom: 0;
-    width: 85%;
     box-sizing: border-box;
-    padding-bottom: 20px;
+    padding-top: 20px;
     color: #f2f0d8;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-left: 20px;
+    margin: auto 20px 0 20px;
+    z-index: 1;
 }
 
 .add-record {
@@ -720,7 +797,7 @@ p {
     width: 100%;
     display: grid;
     justify-content: center;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
 .track {
@@ -760,8 +837,8 @@ p {
     justify-items: center;
     align-content: center;
     align-items: center;
-    gap: 8px;
-    padding: 4px 16px 2px;
+    gap: 12px;
+    padding: 4px 16px 6px;
     border-radius: 999px;
     top: 50%;
     left: 50%;
@@ -864,4 +941,11 @@ p {
     color: #f2f0d8;
     padding: 5px 10px;
     border-radius: 4px;
+    backdrop-filter: blur(10px);
+}
+
+.api-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

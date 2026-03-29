@@ -7,6 +7,7 @@ from flask import redirect, render_template, session, request, jsonify
 from functools import wraps
 
 
+# Not used
 def apology(message, code=400):
     """Render message as an apology to user."""
 
@@ -49,6 +50,12 @@ def login_required(f):
 
 
 def ensure_token(buffer_seconds: int = 30) -> None:
+    """
+    Check if access token is valid.
+
+    If access token has expired or is about to expire in buffer_seconds,
+    then refresh access token using refresh token.
+    """
     refresh_token = session.get("refresh_token")
     if not refresh_token:
         raise PermissionError("Missing refresh_token in session")
@@ -71,6 +78,7 @@ def ensure_token(buffer_seconds: int = 30) -> None:
 
 
 def refresh_access_token(refresh_token: str) -> dict:
+    """Gets refresh token using client id and client secret."""
     client_id = os.getenv("CLIENT_ID_SPOTIFY")
     client_secret = os.getenv("CLIENT_SECRET_SPOTIFY")
     if not client_id or not client_secret:
@@ -95,6 +103,7 @@ def refresh_access_token(refresh_token: str) -> dict:
 
 
 def auth_required(f):
+    """Decorate routes to require API authentication."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         is_api = request.path.startswith("/api/")

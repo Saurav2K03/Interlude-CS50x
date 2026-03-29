@@ -12,6 +12,7 @@ from flask_session import Session
 from helpers import apology, login_required, auth_required
 from werkzeug.security import check_password_hash, generate_password_hash
 
+# Load environment variables
 load_dotenv(override=True)
 
 # Configure application
@@ -39,6 +40,7 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///" + os.path.join(BASE_DIR, "interlude.db"))
 
+
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -47,16 +49,32 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+
 @app.route("/")
 @login_required
 def index():
-    """For 'Hello' message personalized to the user."""
+    # 'Hello' message personalized to the user
     username = db.execute(
         "SELECT username FROM users WHERE id = ?", session.get("user_id")
     )
 
     """Show user's record collection"""
     return render_template("index.html", user=username, api_access=session.get("api_access", False))
+
+
+def checkUserCredentials(username, password):
+    """Check user's credentials"""
+    # Query database for username
+    rows = db.execute(
+        "SELECT * FROM users WHERE username = ?", username
+    )
+
+    # Ensure username exists and password is correct
+    if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
+        return False
+    
+    session["user_id"] = rows[0]["id"]
+    return True
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -80,12 +98,15 @@ def register():
 
         else:
             try:
+                # Add user to database
                 db.execute("INSERT INTO users (username, hash) VALUES(?,?)", username, generate_password_hash(password))
+                # Set user_id in current session
+                checkUserCredentials(username, password)
                 flash("You are now registered!", "success")
 
             except ValueError:
                 flash("Username already exists.", "error")
-                
+        
         return redirect("/")
     else:
         return render_template("login.html")
@@ -93,37 +114,29 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Log user in"""
+    """Handle user Login"""
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Forget any user_id
         session.clear()
+        username = request.form.get("username")
+        password = request.form.get("password")
         # Ensure username was submitted
-        if not request.form.get("username"):
+        if not username:
             flash("Must provide a username.", "info")
 
         # Ensure password was submitted
-        elif not request.form.get("password"):
+        elif not password:
             flash("Must provide a password.", "info")
 
-        else:
-            # Query database for username
-            rows = db.execute(
-                "SELECT * FROM users WHERE username = ?", request.form.get("username")
-            )
-
-            # Ensure username exists and password is correct
-            if len(rows) != 1 or not check_password_hash(
-                rows[0]["hash"], request.form.get("password")
-            ):
-                flash("Invalid username and/or password.", "warning")
-            else:
-                # Remember which user has logged in
-                session["user_id"] = rows[0]["id"]
-
-                # Redirect user to home page
-                flash("Logged in successfully!", "success")
+        if not checkUserCredentials(username, password):
+            flash("Invalid username and/or password.", "warning")
+            return redirect("/")
+        
+        flash("Logged in successfully!", "success")
+        
+        # Redirect user to home page
         return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
@@ -133,7 +146,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    """Log user out"""
+    """Handle what happens on Logout"""
 
     # Forget any user_id
     session.clear()
@@ -146,9 +159,11 @@ def logout():
 
 @app.route("/api/auth")
 def api_auth():
-    """Protects from CSRF attacks"""
+    """Load API authentication page with necessary scope"""
+    # Protect from CSRF attacks
     state = secrets.token_urlsafe(16)
 
+    # Set API scope
     scopes = [
         "user-read-recently-played",
         "user-top-read",
@@ -177,6 +192,7 @@ def api_auth():
 
 @app.route("/callback")
 def callback():
+    """Handle callback after API authentication"""
     # Explicitly handling denial/cancel
     if request.args.get("error"):
         session.pop("oauth_state", None)
@@ -241,6 +257,11 @@ def callback():
 @login_required
 @auth_required
 def account_tier():
+    """
+    Check if user has Spotify Premium
+    
+    https://developer.spotify.com/documentation/web-api/reference/get-current-users-profile
+    """
     access_token = session.get("access_token")
     response = requests.get(
         "https://api.spotify.com/v1/me",
@@ -263,12 +284,14 @@ def account_tier():
 @login_required
 @auth_required
 def api_refresh():
+    """Refresh app"""
     return jsonify({"ok": True}), 200
 
 
 @app.route("/api/status")
 @login_required
 def api_status():
+    """Check if API is successfully authenticated"""
     return jsonify({"api_access": session.get("api_access", False)}), 200
 
 
@@ -276,6 +299,11 @@ def api_status():
 @login_required
 @auth_required
 def top_tracks():
+    """
+    Get user's short term top tracks
+    
+    https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
+    """
     access_token = session.get("access_token")
 
     response = requests.get(
@@ -285,7 +313,7 @@ def top_tracks():
         },
         params={
             "limit": 50,
-            "time_range": "long_term"
+            "time_range": "short_term"
         },
         timeout=15
     )
@@ -302,6 +330,11 @@ def top_tracks():
 @login_required
 @auth_required
 def search():
+    """
+    Get search results
+    
+    https://developer.spotify.com/documentation/web-api/reference/search
+    """
     value = request.json["value"]
     access_token = session.get("access_token")
 
@@ -313,7 +346,7 @@ def search():
         params={
             "q": value,
             "type": "track",
-            "limit": 50
+            "limit": 10
         },
         timeout=15
     )
@@ -324,6 +357,11 @@ def search():
 @login_required
 @auth_required
 def play_track():
+    """
+    Play requested track
+    
+    https://developer.spotify.com/documentation/web-api/reference/start-a-users-playback
+    """
     uri = request.json["uri"]
     position_ms = request.json["position_ms"]
 
@@ -349,7 +387,8 @@ def play_track():
         return jsonify({
             "error": "No devices found",
             "message": "Please open Spotify on a device.",
-            "category": "error"}), 400
+            "category": "error"
+        }), 400
     
     active = next((device for device in devices if device.get("is_active")), None)
     device_id = (active or devices[0]).get("id")
@@ -384,6 +423,11 @@ def play_track():
 @login_required
 @auth_required
 def pause_track():
+    """
+    Pause currently playing track
+
+    https://developer.spotify.com/documentation/web-api/reference/pause-a-users-playback
+    """
     access_token = session.get("access_token")
 
     response = requests.put(
@@ -404,6 +448,11 @@ def pause_track():
 @login_required
 @auth_required
 def currently_playing():
+    """
+    Get data for any track playing or paused
+
+    https://developer.spotify.com/documentation/web-api/reference/get-the-users-currently-playing-track
+    """
     access_token = session.get("access_token")
 
     response = requests.get(
@@ -430,6 +479,7 @@ def currently_playing():
 @login_required
 @auth_required
 def set_queue():
+    """Update any changes in user's queue in the database"""
     data = request.json["queue"]
     queue = json.dumps(data)
     # Put queue in the database
@@ -444,11 +494,13 @@ def set_queue():
 @login_required
 @auth_required
 def get_queue():
+    """Get user's queue from the database"""
     response = db.execute(
         "SELECT queue FROM users WHERE id = ?", session.get("user_id")
     )
 
     queue = response[0]["queue"]
+    print("Queue:", queue)
     return queue
 
 
@@ -456,6 +508,15 @@ def get_queue():
 @login_required
 @auth_required
 def get_tracks():
+    """
+    Get track data for requested track ids
+    (Endpoint for getting several tracks simultaneously has been deprecated)
+
+    https://developer.spotify.com/documentation/web-api/reference/get-track
+    """
+    tracks = {
+        "tracks": []
+    }
     ids = request.json["ids"]
 
     if (len(ids) == 0):
@@ -463,23 +524,27 @@ def get_tracks():
     
     access_token = session.get("access_token")
 
-    response = requests.get(
-        "https://api.spotify.com/v1/tracks",
-        headers = {
-            "Authorization": f"Bearer {access_token}"
-        },
-        params={
-            "ids": ",".join(ids)
-        },
-        timeout=15
-    )
-    return jsonify(response.json()), response.status_code
+    for id in ids:
+        response = requests.get(
+            "https://api.spotify.com/v1/tracks/" + id,
+            headers = {
+                "Authorization": f"Bearer {access_token}"
+            },
+            timeout=15
+        )
+        tracks["tracks"].append(response.json())
+    return jsonify(tracks), 200
 
 
 @app.route("/api/available-devices")
 @login_required
 @auth_required
 def available_devices():
+    """
+    Check which devices currently have Spotify active
+
+    https://developer.spotify.com/documentation/web-api/reference/get-a-users-available-devices
+    """
     access_token = session.get("access_token")
 
     response = requests.get(

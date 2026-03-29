@@ -1,0 +1,149 @@
+@media (width <= 1200px) {
+    /* .greeting {
+        color: whitesmoke;
+    } */
+
+    .app-name {
+        font-size: 80px;
+    }
+
+    #inter,
+    #lude {
+        color: #f2f0d8;
+    }
+
+    .navbar {
+        left: 0;
+        margin: 0;
+        padding: 12px;
+        width: 100%;
+        height: 47px;
+        justify-content: space-around;
+    }
+
+    .navbar-items {
+        flex: 1;
+        text-align: center;
+    }
+
+    .navbar-items.turntable {
+        display: flex;
+    }
+
+    .bg-left,
+    .bg-right {
+        width: 100%;
+        height: 100dvh;
+        opacity: 0;
+        transition: opacity 200ms ease;
+    }
+
+    body.bg-left-active .bg-left {
+        opacity: 1;
+    }
+
+    body.bg-right-active .bg-right {
+        opacity: 1;
+    }
+
+    .home-left,
+    .home-right {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding-bottom: 67px;
+        width: 100%;
+    }
+
+    .register,
+    .login {
+        position: relative;
+        width: 100%;
+    }
+
+    .login {
+        display: flex;
+    }
+
+    .register {
+        display: none;
+    }
+
+    .home-left {
+        display: none;
+    }
+
+    .home-right {
+        display: flex;
+    }
+
+    .apparatus {
+        width: clamp(260px, 75vw, 720px);
+    }
+
+    .hello {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+@media (width <= 600px) {
+    .xlarge {
+        font-size: 30px;
+    }
+
+    .large {
+        font-size: 34px;
+    }
+
+    .medium {
+        font-size: 20px;
+    }
+
+    .small {
+        font-size: 14px;
+    }
+
+    .xsmall {
+        font-size: 10px;
+    }
+
+    .navbar-items {
+        flex-direction: column;
+        font-size: 10px;
+        gap: 2px;
+    }
+
+    .app-name {
+        font-size: clamp(28px, 15vw, 72px);
+        line-height: 1.05;
+        padding: 0 clamp(12px, 5vw, 20px);
+    }
+
+    .field {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .register input,
+    .login input {
+        text-align: left;
+    }
+
+    .card-layout {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+}
+
+@media (height <= 760px) {
+    /* .greeting {
+        display: none;
+    } */
+
+    .app-name {
+        margin: 5vh auto;
+    }
+}

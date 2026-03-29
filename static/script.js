@@ -3,29 +3,93 @@ const arm = document.querySelector(".arm")
 const vinyl = document.querySelector(".vinyl-wrapper")
 const searchBar = document.querySelector(".search-bar")
 const searchInput = document.querySelector(".search-input")
-const myRecordsSection = document.querySelector(".myRecords-section")
+const recordsSection = document.querySelector(".records-section")
 const queueSection = document.querySelector(".queue-section")
 const searchContainer = document.querySelector(".search-content")
-const myRecordsContainer = document.querySelector(".myRecords-content")
+const recordsContainer = document.querySelector(".records-content")
 const queueContainer = document.querySelector(".queue-content")
 const homeTitle = document.querySelector(".section-title")
 const activeDevice = document.querySelector(".active-device")
-const defaultAudio = new Audio("/static/audio/Miles Away.mp3")
+const defaultAudio = new Audio("/static/audios/Miles Away.mp3")
+const homeLeft = document.querySelector(".home-left")
+const homeRight = document.querySelector(".home-right")
+const turntableTab = document.querySelector(".turntable")
+const recordsTab = document.querySelector(".records")
+const queueTab = document.querySelector(".queue")
+const registerForm = document.querySelector(".register")
+const loginForm = document.querySelector(".login")
+const registerTab = document.querySelector(".register-show-btn")
+const loginTab = document.querySelector(".login-show-btn")
+// const greeting = document.querySelector(".greeting")
+const textInter = document.getElementById("inter")
+const textLude = document.getElementById("lude")
 
+let queueLoading = true
 let queue = []
 let debounceTimeout = null
 let trackEndTimer = null
 let watchedTrackId = null
+let currentAuthPanel = "login"
+let wasMobile = window.innerWidth <= 1200
 
-// Adding event listener to link icon for api connection
-if (api) {
-  api.forEach(icon => {
-    icon.addEventListener("click", () => {
-      window.location.href = "/api/auth"
-    })
-  })
+// Sets mobile view if window width <= 1200px
+function setMobilePanel(panel) {
+	if (window.innerWidth > 1200) return
+
+	if (homeLeft || homeRight) {
+		const showTurntable = panel === "turntable"
+		homeLeft.style.display = showTurntable ? "flex" : "none"
+		homeRight.style.display = showTurntable ? "none" : "flex"
+	
+		document.body.classList.remove("bg-left-active", "bg-right-active")
+		document.body.classList.add(showTurntable ? "bg-left-active" : "bg-right-active")
+	} else if (registerForm || loginForm) {
+		currentAuthPanel = panel === "register" ? "register" : "login"
+    const showLogin = currentAuthPanel === "login"
+
+		if (registerForm) registerForm.style.display = showLogin ? "none" : "flex"
+		if (loginForm) loginForm.style.display = showLogin ? "flex" : "none"
+
+		document.body.classList.remove("bg-left-active", "bg-right-active")
+		document.body.classList.add(showLogin ? "bg-right-active" : "bg-left-active")
+
+		// greeting.style.color = showLogin ? "whitesmoke" : "black"
+		if (textInter) textInter.style.color = showLogin ? "#f2f0d8" : "#493920"
+		if (textLude) textLude.style.color = showLogin ? "#f2f0d8" : "#493920"
+	}
 }
 
+// Handles change of some styles when window resized
+window.addEventListener("resize", () => {
+	const isMobile = window.innerWidth <= 1200
+
+  // Ignore keyboard-driven resizes that stay in same mode
+  if (isMobile === wasMobile) return
+
+  wasMobile = isMobile
+
+  // Set split view if not in mobile view else single panel view
+	if (homeLeft || homeRight) {
+		if (!isMobile) {
+			homeLeft.style.display = "flex"
+			homeRight.style.display = "flex"
+		} else {
+			setMobilePanel("right")
+		}
+	} else if (registerForm || loginForm) {
+		if (!isMobile) {
+			if (registerForm) registerForm.style.display = "flex"
+			if (loginForm) loginForm.style.display = "flex"
+			// greeting.style.color = "black"
+			if (textInter) textInter.style.color = "#493920"
+			if (textLude) textLude.style.color = "#f2f0d8"
+		} else {
+			setMobilePanel(currentAuthPanel)
+		}
+	}
+})
+
+// onClick of player icon, refresh the turntable (update changes if any)
 function refreshPlayer(icon) {
   if (!icon) return
   icon.classList.remove("spin-once")
@@ -34,6 +98,7 @@ function refreshPlayer(icon) {
   checkCurrentlyPlaying()
 }
 
+// Show toast messages that don't happen on redirects
 function showToast(message, category = "info") {
   const box = document.querySelector(".toast-box")
   if (!box) return
@@ -58,6 +123,7 @@ function showToast(message, category = "info") {
   box.appendChild(toast)
 }
 
+// Remove toast from toast container on click
 function removeToast(closeBtn) {
   const toast = closeBtn.closest(".toast")
   if (!toast) return
@@ -68,6 +134,7 @@ function removeToast(closeBtn) {
   })
 }
 
+// Check if user is connected to API
 async function checkApiStatus() {
   try {
     const response = await fetch("/api/status", {
@@ -76,10 +143,18 @@ async function checkApiStatus() {
 
     if (!response.ok) return false
     
+    // Check if response is actually JSON before parsing
+    const contentType = response.headers.get("content-type")
+    if (!contentType || !contentType.includes("application/json")) {
+      console.warn("API status endpoint returned non-JSON:", contentType)
+      return false
+    }
+
     const data = await response.json()
     return data.api_access
   } catch (error) {
     console.error("Error during checkApiStatus(): ", error)
+    return false
   }
 }
 
@@ -118,11 +193,12 @@ async function getQueue() {
 
   const tracksObj = await getTracks(queueIds)
   queue = Array.isArray(tracksObj?.tracks) ? tracksObj.tracks : []
+  queueLoading = false
 }
 
 // Displaying contents based on section
 function showOnly(container) {
-  [searchContainer, myRecordsContainer, queueContainer].forEach(section => {
+  [searchContainer, recordsContainer, queueContainer].forEach(section => {
     section.style.display = "none"
     section.innerHTML = ""
   })
@@ -136,71 +212,7 @@ function setTitle(text) {
   }
 }
 
-// Listening for inputs
-if (searchInput) {
-  searchInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      searchInput.value = ""
-      searchInput.blur()
-    }
-  })
-
-  // Search with debouncing
-  searchInput.addEventListener("input", async (e) => {
-    const value = e.target.value
-
-    // Clear previous timeout if any
-    clearTimeout(debounceTimeout)
-
-    if (value && value !== "") {
-      debounceTimeout = setTimeout(() => {
-        searchTracks(value)
-      }, 250)
-    }
-  })
-}
-
-// Adding event listener to arm for play/pause logic
-if (arm) {
-  arm.addEventListener("click", async () => {
-    try {
-      // Get currently playing song
-      const data = await currentlyPlaying()
-      if (!data) {
-        if (defaultAudio.paused) {
-          defaultAudio.play()
-
-          const progress = defaultAudio.currentTime * 1000
-          const tracklen = defaultAudio.duration * 1000
-          engagePlayer(tracklen, progress)
-
-          defaultAudio.addEventListener("ended", () => {
-            disengagePlayer()
-            defaultAudio.currentTime = 0;
-          })
-        } else {
-          defaultAudio.pause()
-          disengagePlayer()
-        }
-        return
-      }
-  
-      if (data.is_playing) {
-        await pause()
-      } else {
-        if (!defaultAudio.paused) {
-          defaultAudio.pause()
-        }
-        loadTrack(data.item)
-        await resume(data, data.progress_ms)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  })
-}
-
+// Set player in engaged state
 function engagePlayer(duration_ms, progress_ms = 0) {
   arm.style.animation = "none"
     arm.offsetHeight
@@ -215,6 +227,7 @@ function engagePlayer(duration_ms, progress_ms = 0) {
     }, 500)
 }
 
+// Set player in disengaged state
 function disengagePlayer() {
   arm.style.animation = "none"
   arm.offsetHeight
@@ -231,7 +244,6 @@ function disengagePlayer() {
 
 // Displaying tracks received
 function displayTracks(data, container) {
-  // Clear loading text
   showOnly(container)
 
   const items = data?.items
@@ -257,7 +269,7 @@ function displayTracks(data, container) {
 
     // Adding action buttons
     const trackButtons = document.createElement("div")
-    trackButtons.innerHTML = `<div class="play-button track-button">
+    trackButtons.innerHTML = `<div class="play-button track-button" title="Play Record">
                                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                   <rect width="30" height="30" fill="url(#pattern0_180_10)"/>
                                   <defs>
@@ -269,16 +281,16 @@ function displayTracks(data, container) {
                                 </svg>
                               </div>
 
-                              <div class="addToQueue-button track-button">
+                              <div class="addToQueue-button track-button" title="Add to Queue">
                                 <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                  <rect width="25" height="25" fill="url(#pattern0_178_5)"/>
-                                  <defs>
-                                    <pattern id="pattern0_178_5" patternContentUnits="objectBoundingBox" width="1" height="1">
-                                      <use xlink:href="#image0_178_5" transform="scale(0.0111111)"/>
-                                    </pattern>
-                                    <image id="image0_178_5" width="90" height="90" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAACXBIWXMAAAsTAAALEwEAmpwYAAAE1klEQVR4nO2dTYgdRRDHy68Y9WQOYlaCaAhCRE2UxA80KnoNIijiJYKHHLyb50mjp6ASUQ8x5mQOIqLxY1HRswcPGjUaUYgfB4NoEj8SDGui+5NiC1mXN/NmunpmuufNDx489u1WV/2ZN9NVXd0rMjAwMDAwMDAwMDAwMJAWwPnAOuA+4FHgZeAT4ARwGNgBLOvaz2wAVgF3Ag8BzwHvAz8A80xmR9f+JwWwDLgc2AyMgN3Ah8BxfPwk0whwIXAzsNW+2rPAt8A/NIT0/Oq8Erg38tU5nULTwdUZguQIcA7wJHCUTJAcAZ4mMyRHgJ/JDMkRMkRyhAyRHCFDJEfIEMkRMkRyhAyRHCFDJEdIl7+LPpAcoXtOWz1l1uorW63eckHRH0iO0B6ngIPAqyboFuA64Ly6vkmOEJ+5RYJut9KqlljPiuWb5Ajh/AZ8DOy1GvVmW1E5s2nfJEeYzK9W5N+9RNAzuvJNcoRi9IG0IkXfJEdIOJiUfetVMCTsW6+CIWHfehUMCfvWq2BI2LdeBUPCvvUqGBL2rVfBkLBvvQqGhH3rVTAk7FuvggHWABcB59pL36+RHCFhoXsFg9DtwCB0OzAI3Q4MQk+f0CzMLG4HngDeAL6yFR5d2P3L3h+0zx4HbtO/kRwgAaFtNfxF4HfC1i51me1aSRk6FFrFsT2GsXhPN4RKitCB0NrLATxb1o3kbMh5Blgu0yw0cAVwgOb5LKkskhaFBjYAv9Aex4CbZJqEBq63zfNto2NujB1PiABjaeB20eU+xiOd30YoIKL95cCndM+BsobKxqGAiPZ1dhGKJikPAyvttc1+FsrOWHGFbKYfS8R5smcKt22MTe3/80z9rokRW10hLi3yKJJ9bzKycozNi50234kRW10hHijyJlJa7aLEtgc95Wa9N746QqwGfqwbZA37WrtwUWLbywve+MoOhVoBXA3cA+wB/gwJskYVLqRAVMkHr12rAoYfgmVbGPQp/S7wtc0f52MGWQUrdbopsR+DWysFs2TgtcDboaKOo7YT//dH68mpC729blB3NZHaik/oN5v0IYZtYF+dgG5wTuCbElpXRionI56xloxbJ6n5sqrRs4FDNIT4Aj4akozEomJSc6SqsftpEPEFWuWKmvGMMWH8mQrjz1U19goNInkLfUlMob+nOU62cOsYecaYMP4jMW8dpQmHk0MtPQxHMa9su2WMYj8MT9IcrzkD7s/0DviO5tjiFFqbW1IX+rGqwegh1k1wWM/KcAqtHUSpC72pTkbYBA96RF5UVNIOolSFPla5qKTnXwBfEJeXYp1aYG1aqQq9q24w6+wgkhi8FfP8fFvGclFi28N8UNsYcAfwh2PgUzYlin7+hvXCeZgJzPrKmPVuqnm95oBz+hUCLvMKOuEbpwuioYwCk5Ei1JerYgS21ipiHwDfLFrlOG4ncX0EPA/craefuwes5pM2HIbyX1JTMxkp4inpKyw00Oynez7vtIGmDezWpstqXaGNlatlGgA2dtjkuEGmCbpp271RphEWbiPaJN40+6fmdjHhAbnTOfUr4rT9J460tlZ0iTYcai9cpDaJeTtI1j9P7ivAem3Tsg6ikPvwrmR3Y0mCWBvxJjs8dp+ugtiymCYp+tL3WkjTLFh/5xZPfeZfm06/4ryCpM8AAAAASUVORK5CYII="/>
-                                  </defs>
-                                </svg>
+																	<rect width="25" height="25" fill="url(#pattern0_433_2)"/>
+																	<defs>
+																		<pattern id="pattern0_433_2" patternContentUnits="objectBoundingBox" width="1" height="1">
+																			<use xlink:href="#image0_433_2" transform="scale(0.0111111)"/>
+																		</pattern>
+																		<image id="image0_433_2" width="90" height="90" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAACXBIWXMAAAsTAAALEwEAmpwYAAADyUlEQVR4nO2cy2sUQRCHGxFXPQgeJBrBixhPYlQSUfCRv8WrejPrzcfNKIovEj168+ADRETw7ONg1Pg4eVXBxBiNii/8pJhGhGQnM909OzM99cHAMDvU9NQ21VXVv11jFEVRFEVRFEVRFEVRFEVRlDSAFnAQeAh8sYecH5DPyh5fFABrgad05oncU/Y4Y5jJaU7+39k6s12x4SIr+zPaXA5cBGaIi4/ABWCZi6Mf5XjQg4w2x4ibMRdHz+Z4wOcM9hYB34ibr/Ke6uiKOlpDR35GcznZOkXy5NCL4TLgvF08YmIaOOe6GLZs6rYQcs+S3A9Q5hQsac7WgiUUMlslNEgctgukHPftNZ3JiqIoiqIoiqIoiqIoylxU19EFVNfRBVTXUW9dRwsYAd5SLr+Bx1aLsQ/YC6wDVgKLi/du8ZuzI5THH+CedewqUxVCyw2EkmbyDztz+0wVicDRf4ArEhJMlSkodJygO7wGhkwdKEjX0bLOflOgk68CK0xdiF3XQfJ+Q8Bx4Abwygphftq4Lucv7WfHbGZSTBobo64D2AZcdpQOi8LqErC1iIFFoesAtgJ3CccdoL/s96oMJHq/s7ZICc0v4Ayw1DQZYCMwQfFIq2KDaSLAAPCe7vEB2GmaBLA9Z8EVCnnmoGlQuJiiPCajDyPA0oy5f9FMOInS6wJJduGKFCmHgDX2GLbXXDltYoQkT/ZJ4Ybnsdn2TP02m9jAvxhZM4/N1Z42b5uYICmrvUix7duq3WJigaR3UUVHu/0krsJduJkKO3o6U0+o6roOklanNyn2Q7Cn9roOkn6yNyn2Q3C09roO4GYIT6TYD8H1Ouk6+jrYlJ2RzMVItq8v07vkKWpe1EnX0dPB5pRLMRKKjEXNZJqBPN2v2YyDeoc784anjDMq2Ex2LGq+h3L0py7oOloeju718GWWhMHL0VXTdfR4hI62hy8XeqfDvqGjarqOPs/FsB1yZosta9N7MayFroO6p3d10XWQiFu8SbEfgiO113WQKIi8SbEfgt2m7pCEOO//aEqxH2J3vPQJGQRtk3Z3G8uLFNu+jf+4ZGMkWjgfeh2LkTRumdgA+u2GqCttx2KkEzKWTSZGSASHrvwranIWI504aSIX0IxTPs+iFtAIIseysqyyEGHletMEgMESRY4DpklQjmx3h2kiJGEky76nL+ONCRcLLJCnPVO/TojNU43/acX/iOBQtHC2WvNFbNyKNk8OgWjh7D+zi4LIJQ6PRldWmwKx7d/dIm6RxrzsgthtMSlS5JDz58A1e88uny7cX4l9pIanckWcAAAAAElFTkSuQmCC"/>
+																	</defs>
+																</svg>
                               </div>`
     trackButtons.classList.add("track-buttons", "glassy")
 
@@ -287,7 +299,7 @@ function displayTracks(data, container) {
 
     playButton.dataset.uri = item.uri
     queueButton.dataset.uri = item.uri
-
+		
     // Adding track name
     const trackName = document.createElement("p")
     trackName.textContent = item.name
@@ -327,19 +339,21 @@ function displayTracks(data, container) {
   })
 }
 
-// Moving queue items
+// Move queue items
 function swapQueueItems(index1, index2) {
   if (index1 >= 0 && index1 < queue.length && index2 >= 0 && index2 < queue.length) {
     [queue[index1], queue[index2]] = [queue[index2], queue[index1]]
   }
   return queue
 }
+
 function moveItemUp(index) {
   if (index > 0) {
     return swapQueueItems(index, index - 1)
   }
   return queue
 }
+
 function moveItemDown(index) {
   if (index < queue.length - 1) {
     return swapQueueItems(index, index + 1)
@@ -347,7 +361,7 @@ function moveItemDown(index) {
   return queue
 }
 
-// Checking if a song is currently playing (Load/Play)
+// Check if a song is currently playing (Load/Play)
 async function checkCurrentlyPlaying() {
   if (await checkApiStatus()) {
     try {
@@ -376,7 +390,7 @@ async function checkCurrentlyPlaying() {
   }
 }
 
-// Getting currently playing song
+// Get currently playing song
 async function currentlyPlaying() {
   const response = await apiFetch("/api/currently-playing")
 
@@ -400,6 +414,7 @@ async function currentlyPlaying() {
   }
 }
 
+// Clear running timeout for track end
 function clearTrackEndWatcher() {
   if (trackEndTimer) {
     clearTimeout(trackEndTimer)
@@ -408,7 +423,7 @@ function clearTrackEndWatcher() {
   watchedTrackId = null
 }
 
-// Load track on the player in inactive state
+// Load track on the player in disengaged state
 function loadTrack(track) {
   let artists = []
   track.artists.forEach(artist => {
@@ -421,6 +436,7 @@ function loadTrack(track) {
   disengagePlayer()
 }
 
+// Set player in disengaged state on track end or play next song in the queue
 async function onTrackEnded() {
   try {
     const playback = await checkCurrentlyPlaying()
@@ -434,11 +450,19 @@ async function onTrackEnded() {
 
     await play(next, 0)
     setQueue()
+    if (isQueueViewActive()) displayQueue()
   } catch (error) {
     console.error(error)
   }
 }
 
+// Check if user is on queue tab
+function isQueueViewActive() {
+  if (!queueContainer) return false
+  return window.getComputedStyle(queueContainer).display !== "none"
+}
+
+// Schedule timer for track_length - track_progress
 function scheduleTrackEndWatcher(track, progress_ms = 0) {
   clearTrackEndWatcher()
 
@@ -557,7 +581,7 @@ function addToQueue(item) {
   }
 
   if (queue.length >= 50) {
-    console.log("Queue is full")
+    showToast("Queue is full!", "info")
     return
   }
   queue.push(item)
@@ -580,6 +604,10 @@ async function searchTracks(value) {
       const data = await response.json()
       setTitle("Search Results")
       displayTracks(data.tracks, searchContainer)
+			const homeContent = document.querySelector(".home-content")
+			if (homeContent) {
+				homeContent.scrollTo({top:0, behavior: "auto"})
+			}
     } catch (error) {
       console.error(error)
     }
@@ -597,8 +625,8 @@ async function myTracks() {
     }
 
     const data = await response.json()
-    displayTracks(data, myRecordsContainer)
-    setTitle("My Records")
+    displayTracks(data, recordsContainer)
+    setTitle("Records")
   } catch (error) {
     console.error(error)
   }
@@ -658,6 +686,7 @@ function displayQueue() {
     trackArtist.textContent = artists.join(", ")
     trackArtist.classList.add("queue-artist", "xsmall", "name-overflow")
 
+    // Setting queue buttons
     const queueButtons = document.createElement("div")
     queueButtons.innerHTML = `<div class="up-button queue-button">
                                 <i class="fa-solid fa-chevron-up"></i>
@@ -676,6 +705,7 @@ function displayQueue() {
     const downButton = queueButtons.querySelector(".down-button")
     const removeButton = queueButtons.querySelector(".remove-button")
 
+    // Button eventListeners
     upButton.addEventListener("click", () => {
       moveItemUp(index)
       displayQueue()
@@ -758,8 +788,126 @@ async function accountTier() {
   return false
 }
 
-// If API is connected, then only myTracks() and checkCurrentlyPlaying()
+// Show turntable tab (only available in mobile view)
+if (turntableTab) {
+	turntableTab.addEventListener("click", async () => {
+		setMobilePanel("turntable")
+		await checkCurrentlyPlaying()
+	})
+}
+
+// Show records tab
+if (recordsTab) {
+  recordsTab.addEventListener("click", async () => {
+		setMobilePanel("right")
+    await myTracks()
+	})
+}
+
+// Show queue tab
+if (queueTab) {
+	queueTab.addEventListener("click", async () => {
+		setMobilePanel("right")
+
+    // Initial wait for queue to finish loading
+    while(queueLoading) {
+      await new Promise(resolve => setTimeout(resolve, 50))
+    }
+
+		displayQueue()
+	})
+}
+
+// Set register tab (for mobile view)
+if (registerTab) {
+	registerTab.addEventListener("click", () => {
+		setMobilePanel("register")
+	})
+}
+
+// Set login tab (for mobile view)
+if (loginTab) {
+	loginTab.addEventListener("click", () => {
+		setMobilePanel("login")
+	})
+}
+
+// eventListener for API icon to direct to API authentication page
+if (api) {
+  api.forEach(icon => {
+    icon.addEventListener("click", () => {
+      window.location.href = "/api/auth"
+    })
+  })
+}
+
+// eventListener for searchbar inputs
+if (searchInput) {
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      searchInput.value = ""
+      searchInput.blur()
+    }
+  })
+
+  // Search with debouncing
+  searchInput.addEventListener("input", async (e) => {
+    const value = e.target.value
+
+    // Clear previous timeout if any
+    clearTimeout(debounceTimeout)
+
+    if (value && value !== "") {
+      debounceTimeout = setTimeout(() => {
+        searchTracks(value)
+      }, 250)
+    }
+  })
+}
+
+// eventListener for arm (Play/Pause logic)
+if (arm) {
+  arm.addEventListener("click", async () => {
+    try {
+      // Get currently playing song
+      const data = await currentlyPlaying()
+      if (!data) {
+        if (defaultAudio.paused) {
+          defaultAudio.play()
+
+          const progress = defaultAudio.currentTime * 1000
+          const tracklen = defaultAudio.duration * 1000
+          engagePlayer(tracklen, progress)
+
+          defaultAudio.addEventListener("ended", () => {
+            disengagePlayer()
+            defaultAudio.currentTime = 0;
+          })
+        } else {
+          defaultAudio.pause()
+          disengagePlayer()
+        }
+        return
+      }
+  
+      if (data.is_playing) {
+        await pause()
+      } else {
+        if (!defaultAudio.paused) {
+          defaultAudio.pause()
+        }
+        loadTrack(data.item)
+        await resume(data, data.progress_ms)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  })
+}
+
 async function main() {
+  // Run these functions only if API is connected and user has premium account
   if (await checkApiStatus() && await accountTier()) {
     await myTracks()
     await checkCurrentlyPlaying()

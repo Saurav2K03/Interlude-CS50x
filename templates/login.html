@@ -6,19 +6,19 @@
 
 {% block main %}
     <div class="login-page">
-        <div class="app-name glassy">
-            <span style="color: #493920">INTER</span><span style="color: #f2f0d8">LUDE.</span>
+        <div class="glassy app-name">
+            <span id="inter">INTER</span><span id="lude">LUDE.</span>
         </div>
-        <div class="medium greeting">
+        <!-- <div class="medium greeting">
             Welcome,
             <div class="small">
-                may you have a great time.
+                may you have a great time!
             </div>
-        </div>
+        </div> -->
         <div class="login-main">    
-            <div class="register xlarge">
+            <div class="register">
                 Register
-                <form action="/register" class="small" method="post">
+                <form action="/register" method="post">
                     <div class="field">
                         <label for="register_username">Username:</label>
                         <input id="register_username" autocomplete="off" name="username" type="text">
@@ -32,12 +32,13 @@
                         <input id="confirmation" name="confirmation" type="password">
                     </div>
                     <button class="glassy" type="submit">Let's Go!</button>
+                    <div class="login-show">Already a user? <span class="login-show-btn">Login.</span></div>
                 </form>
             </div>
         
-            <div class="login xlarge">
+            <div class="login">
                 Login
-                <form action="/login" class="small" method="post">
+                <form action="/login" method="post">
                     <div class="field">
                         <label for="login_username">Username:</label>
                         <input id="login_username" autocomplete="off" name="username" type="text">
@@ -48,6 +49,7 @@
                     </div>
                     <div class="forgot">Forgot Password?</div>
                     <button class="glassy" type="submit">Let's Go!</button>
+                    <div class="register-show">New user? <span class="register-show-btn">Register.</span></div>
                 </form>
             </div>
         </div>
