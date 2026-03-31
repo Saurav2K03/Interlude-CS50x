@@ -1,17 +1,16 @@
 # INTERLUDE.
-#### Video Demo:  <URL HERE>
-#### Description:
+#### Video Demo:  https://youtu.be/ERuAYDDqBhQ
 
 ## Introduction
-Interlude is a web application for playing music with a unique & sweet twist in UI. It is a modern and digital reincarnation of the a classic vinyl record player (or a turntable). While popular music applications like Spotify, Apple Music, YT Music, etc. are great themselves, but I felt that in the pursuit of catering to masses and maximizing profits, the room for creativity has diminished. So, I took it upon myself to create a personal music app that stands out from the crowd and is not meant for mass use, rather for people who want to keep their creative flame alive. It has a clean, minimal, and modern aesthetics. This app extracts away the complexity of popular music apps, with a simple structure. The user logs in, connects their Spotify account to the app, searches for tracks, plays a track, and controls playback while managing a custom queue.
+Interlude is a web application for playing music with a unique twist in UI. It is a modern reincarnation of a classic vinyl record player (or a turntable) in a digital form. While popular music applications like Spotify, Apple Music, YT Music, etc. are great themselves, I felt that in the pursuit of catering to masses and maximizing profits, creativity has diminished. So, I created a personal music app that stands out from the crowd and tries to keep the flame of creativity alive. The app has a clean, minimal, and modern aesthetics and extracts away the complexity of popular music apps, with a simple structure. The user logs in, connects their Spotify account to the app, searches for tracks, plays a track, and controls playback while managing a custom queue.
 
 #### NOTE: This app requires an active Spotify device in background.
 
 Under the hood, Interlude handles authentication, token management (access and refresh tokens), API communication, and persistant user data so that listening session feels continuous and reliable.
 
-Interlude uses HTML, CSS, and JavaScript on the frontend, while Flask manages the backend architecture. User accounts are managed using SQLite database on the server-side. The database includes usernames, hashed passwords, and user queue list. Apart from that, track data and media playback is powered by Spotify's Web API.
+Interlude uses HTML, CSS, and JavaScript on the frontend, while Flask manages the backend architecture. User accounts are managed using SQLite database on the server-side. The database includes usernames, hashed passwords, and user's queue list. Apart from that, track data and media playback is powered by Spotify's Web API.
 
-A major goal of this project was to make the UI feel distinct and alive. From turntable visuals, to animating the record, and making the tone arm movement to feel natural and real, took a long time. At the same time, updating UI with changes to currently playing track and queue was quite challenging. The backend was made secure and maintainable, specially around OAuth and session handling using access and refresh tokens.
+A major goal of this project was to make the UI feel distinct and alive. From turntable visuals, to animating the record, and getting the tone arm movement to feel natural and real, took a long time. At the same time, updating UI with changes to currently playing track and queue was quite challenging. The backend was made secure and maintainable, specially around OAuth and session handling using access and refresh tokens.
 
 ## Core Functionality
 After visiting Interlude for the first time, the user can register himself with the app. Upon successful registration, or login if already registered, the user lands on the main interface of the application. The user can then play the already loaded single "Miles Away - NDL Overture by David Belanger". With connection to Spotify, Interlude can search for tracks, fetch user's top tracks, detect available playback devices, and control media playback.

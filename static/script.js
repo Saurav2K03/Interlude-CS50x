@@ -182,12 +182,14 @@ async function getQueue() {
   const response = await apiFetch("/api/get-queue")
   if (!response.ok) {
     queue = []
+    queueLoading = false
     return
   }
 
   const queueIds = await response.json()
   if (!Array.isArray(queueIds) || queueIds.length === 0) {
     queue = []
+    queueLoading = false
     return
   }
 
